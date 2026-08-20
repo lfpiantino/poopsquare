@@ -1,0 +1,10 @@
+.openai
+.sites-runtime
+.wrangler
+build
+dist
+drizzle
+examples
+worker
+vite.config.ts
+drizzle.config.ts
