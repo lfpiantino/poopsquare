@@ -1,4 +1,4 @@
-import { getChatGPTUser } from "../../chatgpt-auth";
+import { getRequestUser } from "../_auth";
 import { json, readyDb } from "../_db";
 
 export async function GET(request: Request) {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   return json(results);
 }
 export async function POST(request: Request) {
-  const user = await getChatGPTUser(); if (!user) return json({ error: "Faça login para cadastrar um local." }, 401);
+  const user = await getRequestUser(request); if (!user) return json({ error: "Faça login para cadastrar um local." }, 401);
   const b = await request.json() as Record<string, unknown>; const required=["name","category","address","city","latitude","longitude"];
   if(required.some(k=>b[k]===undefined||String(b[k]).trim()==="")) return json({error:"Preencha os campos obrigatórios."},400);
   const db=await readyDb(); const now=new Date().toISOString();
