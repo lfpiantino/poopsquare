@@ -2,7 +2,7 @@
 
 O **PoopSquare** é uma rede social colaborativa para localizar, cadastrar e avaliar banheiros públicos e de estabelecimentos. Inspirado na proposta original do Foursquare, o projeto combina geolocalização, check-ins, avaliações da comunidade, gamificação e descoberta de locais.
 
-🌐 **Aplicação em produção:** [poopsquare.lfpiantino.chatgpt.site]( )
+🌐 **Aplicação em produção:** [[poopsquare.lfpiantino.chatgpt.site](https://poopsquare.vercel.app/)]( )
 
 ## Funcionalidades
 
