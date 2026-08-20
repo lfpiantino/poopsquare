@@ -1,107 +1,157 @@
-# vinext-starter
+# 💩 PoopSquare
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+O **PoopSquare** é uma rede social colaborativa para localizar, cadastrar e avaliar banheiros públicos e de estabelecimentos. Inspirado na proposta original do Foursquare, o projeto combina geolocalização, check-ins, avaliações da comunidade, gamificação e descoberta de locais.
 
-## Prerequisites
+🌐 **Aplicação em produção:** [poopsquare.lfpiantino.chatgpt.site](https://poopsquare.lfpiantino.chatgpt.site)
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+## Funcionalidades
 
-## Sites Lifecycle
+- Busca por cidades, ruas e estabelecimentos;
+- mapa interativo baseado no OpenStreetMap;
+- localização atual pelo GPS do dispositivo;
+- cadastro colaborativo de banheiros e estabelecimentos;
+- informações sobre acessibilidade, fraldário, banheiro familiar, chuveiro, Wi-Fi e tipo de acesso;
+- check-ins com pontuação de experiência;
+- avaliações de limpeza, privacidade, insumos, acessibilidade e conforto;
+- comentários e dicas da comunidade;
+- feed de atividades;
+- badges, ranking e sistema de “Prefeito”;
+- autenticação de usuários;
+- interface responsiva para computadores e celulares;
+- banco de dados persistente.
 
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
+A base pública começa sem locais fictícios. Os registros exibidos são cadastrados pelos próprios usuários.
 
-This starter does not use `wrangler.jsonc`.
+## Tecnologias
 
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
+- [React](https://react.dev/)
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vinext](https://github.com/cloudflare/vinext)
+- [Vite](https://vite.dev/)
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [Cloudflare D1](https://developers.cloudflare.com/d1/)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [OpenStreetMap](https://www.openstreetmap.org/)
+- [Nominatim](https://nominatim.org/)
 
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
+## Requisitos
 
-## Included Shape
+- Node.js 22.13 ou superior;
+- npm;
+- ambiente Linux, WSL ou contêiner com `bash`, `flock`, `curl` e GNU `timeout`.
 
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+## Instalação
 
-## Workspace Auth Headers
+Clone o repositório:
 
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+git clone https://github.com/lfpiantino/poopsquare.git
+cd poopsquare
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+Instale as dependências:
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+```bash
+npm ci
+```
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+Os scripts da pasta `scripts/` precisam manter permissão de execução no Linux:
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+```bash
+chmod +x scripts/*.sh
+```
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+## Execução local
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+Inicie o servidor de desenvolvimento:
 
-## Diagnostic Commands
+```bash
+npm run dev
+```
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build and verify the rendered development-preview metadata
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+Gere a versão de produção:
 
-Use build commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
+```bash
+npm run build
+```
 
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
+Execute a versão compilada:
 
-## Learn More
+```bash
+npm run start
+```
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+## Comandos disponíveis
+
+| Comando | Finalidade |
+|---|---|
+| `npm run dev` | Inicia o ambiente de desenvolvimento |
+| `npm run build` | Gera a versão otimizada de produção |
+| `npm run start` | Executa a aplicação compilada |
+| `npm test` | Compila e executa os testes |
+| `npm run lint` | Verifica a qualidade do código |
+| `npm run db:generate` | Gera as migrações do banco com Drizzle |
+
+## Estrutura principal
+
+```text
+app/
+├── api/                 # Rotas de locais, avaliações, feed e check-ins
+├── PoopSquareApp.tsx    # Interface principal da rede social
+├── chatgpt-auth.ts      # Integração de autenticação
+├── globals.css          # Estilos globais
+├── layout.tsx           # Metadados e estrutura geral
+└── page.tsx             # Página inicial
+
+db/
+├── index.ts             # Conexão com o banco
+└── schema.ts            # Tabelas e modelos de dados
+
+drizzle/                 # Migrações do banco
+public/                  # Imagens e arquivos públicos
+scripts/                 # Scripts de instalação e compilação
+```
+
+## Banco de dados
+
+O projeto usa **Cloudflare D1** para armazenar:
+
+- perfis de usuários;
+- locais cadastrados;
+- avaliações;
+- check-ins;
+- amizades e atividades sociais.
+
+As estruturas estão definidas em `db/schema.ts`. Após alterações no esquema, gere uma nova migração:
+
+```bash
+npm run db:generate
+```
+
+## Geolocalização
+
+A busca de endereços utiliza o Nominatim e os dados geográficos do OpenStreetMap. O GPS depende da autorização do usuário e de uma conexão HTTPS em produção.
+
+Ao utilizar ou modificar o projeto, preserve a atribuição obrigatória ao OpenStreetMap.
+
+## Publicação
+
+A versão pública é hospedada no ChatGPT Sites com execução em Cloudflare Workers e banco D1.
+
+O repositório também pode ser conectado a plataformas como a Vercel. Nesse caso, as integrações específicas do Cloudflare — especialmente D1 e a autenticação do ambiente Sites — precisam ser substituídas ou configuradas para o provedor escolhido.
+
+## Privacidade e uso responsável
+
+Não cadastre informações privadas ou sensíveis. Fotos, comentários e avaliações devem respeitar outras pessoas, os responsáveis pelo estabelecimento e a legislação aplicável.
+
+## Autor
+
+**Luiz Fernando Moura Piantino**
+
+- GitHub: [@lfpiantino](https://github.com/lfpiantino)
+- Site: [lfpiantino.com.br](https://lfpiantino.com.br/)
+
+## Licença
+
+A licença do projeto ainda não foi definida. Antes de reutilizar ou redistribuir o código, consulte o responsável pelo repositório.
