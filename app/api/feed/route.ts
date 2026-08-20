@@ -1,0 +1,2 @@
+import { json, readyDb } from "../_db";
+export async function GET(){const db=await readyDb();const {results}=await db.prepare(`SELECT 'review' type,r.id,r.user_name userName,p.name placeName,r.rating value,r.comment text,r.created_at createdAt FROM reviews r JOIN places p ON p.id=r.place_id UNION ALL SELECT 'checkin',c.id,c.user_name,p.name,0,'fez check-in',c.created_at FROM checkins c JOIN places p ON p.id=c.place_id ORDER BY createdAt DESC LIMIT 40`).all();return json(results)}
