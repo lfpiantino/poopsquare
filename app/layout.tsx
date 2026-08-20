@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import "./globals.css";
+export const metadata:Metadata={metadataBase:new URL("https://poopsquare.lfpiantino.chatgpt.site"),title:"PoopSquare — Encontre o trono certo",description:"Descubra, avalie e compartilhe os melhores banheiros próximos de você.",openGraph:{title:"PoopSquare",description:"Encontre o trono certo, na hora certa.",images:[{url:"/og.png",width:1200,height:630,alt:"PoopSquare — Encontre o trono certo, na hora certa."}]},twitter:{card:"summary_large_image",title:"PoopSquare",description:"Encontre o trono certo, na hora certa.",images:["/og.png"]},icons:{icon:"/favicon.svg",shortcut:"/favicon.svg"}};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="pt-BR" suppressHydrationWarning><body>{children}</body></html>}
