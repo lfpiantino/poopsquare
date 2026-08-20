@@ -1,6 +1,8 @@
-import { env } from "cloudflare:workers";
-
 export async function readyDb() {
+  const loadCloudflare = new Function(
+    "return import('cloudflare:workers')",
+  ) as () => Promise<{ env: { DB?: any } }>;
+  const { env } = await loadCloudflare();
   const db = env.DB;
   if (!db) throw new Error("Banco de dados indisponível");
   await db.batch([
